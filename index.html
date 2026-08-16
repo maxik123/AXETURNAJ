@@ -1,74 +1,132 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PvP Overlay</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PvP Overlay</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        crossorigin="anonymous">
+    </script>
 </head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<body>
+
+    <!-- CELÝ EXPORTOVATELNÝ OVERLAY: 1280 × 720 -->
+    <div class="overlay" id="overlay">
+
+        <div class="scoreboard">
+            <div class="player left">
+                <img
+                    class="skin"
+                    src="https://mc-heads.net/avatar/ksd_argys/58"
+                    crossorigin="anonymous"
+                    alt="ksd_argys">
+                <div class="name">ksd_argys</div>
+            </div>
+
+            <div class="center">
+                <img
+                    class="center-logo"
+                    src="img/logo.png"
+                    alt="Logo">
+            </div>
+
+            <div class="player right">
+                <div class="name">Drticka</div>
+                <img
+                    class="skin"
+                    src="https://mc-heads.net/avatar/Drticka/58"
+                    crossorigin="anonymous"
+                    alt="Drticka">
+            </div>
+
+            <div class="red-line"></div>
+        </div>
+
+    </div>
+
+    <!-- TLAČÍTKO NENÍ SOUČÁSTÍ EXPORTU -->
+    <button id="exportButton" type="button">
+        EXPORT PNG
+    </button>
 
 <script>
-async function exportOverlay() {
-    const overlay = document.querySelector(".scoreboard");
+async function waitForImages(container) {
+    const images = Array.from(container.querySelectorAll("img"));
 
-    const canvas = await html2canvas(overlay, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        allowTaint: false
-    });
+    await Promise.all(images.map(img => {
+        if (img.complete && img.naturalWidth > 0) {
+            return Promise.resolve();
+        }
 
-    const link = document.createElement("a");
-
-    link.download = "pvp-overlay.png";
-    link.href = canvas.toDataURL("image/png");
-
-    link.click();
+        return new Promise(resolve => {
+            img.addEventListener("load", resolve, { once: true });
+            img.addEventListener("error", resolve, { once: true });
+        });
+    }));
 }
+
+async function exportOverlay() {
+    const button = document.getElementById("exportButton");
+    const overlay = document.getElementById("overlay");
+
+    if (!overlay || typeof html2canvas === "undefined") {
+        alert("Export se nepodařilo spustit. Zkontroluj připojení k internetu a html2canvas.");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "EXPORTUJI...";
+
+    try {
+        await waitForImages(overlay);
+
+        const canvas = await html2canvas(overlay, {
+            width: 1280,
+            height: 720,
+            scale: 1,
+            backgroundColor: null,
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            imageTimeout: 15000
+        });
+
+        canvas.toBlob(function(blob) {
+            if (!blob) {
+                throw new Error("PNG se nepodařilo vytvořit.");
+            }
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = "pvp-overlay-1280x720.png";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }, "image/png");
+
+    } catch (error) {
+        console.error("Export error:", error);
+        alert(
+            "Export selhal. Pokud se chyba týká obrázků hráčů, " +
+            "zkontroluj, že mc-heads.net povoluje CORS."
+        );
+    } finally {
+        button.disabled = false;
+        button.textContent = "EXPORT PNG";
+    }
+}
+
+document.getElementById("exportButton").addEventListener("click", exportOverlay);
 </script>
-    <button id="exportButton" onclick="exportOverlay()">
-    EXPORT PNG
-</button>
-    
-<body>
-<div class="scoreboard">
-    <div class="player left">
-        <img class="skin" src="https://mc-heads.net/avatar/ksd_argys/58" alt="ksd_argys">
-        <div class="name">ksd_argys</div>
-    </div>
 
-    <div class="center">
-        <img class="center-logo" src="img/logo.png" alt="Logo">
-    </div>
-
-    <div class="player right">
-        <div class="name">Drticka</div>
-        <img class="skin" src="https://mc-heads.net/avatar/Drticka/58" alt="Drtička">
-    </div>
-
-    <div class="red-line"></div>
-</div>
 </body>
 </html>
-<script>
-async function exportOverlay() {
-
-    const overlay = document.querySelector(".overlay");
-
-    const canvas = await html2canvas(overlay, {
-        width: 1280,
-        height: 720,
-        scale: 1,
-        backgroundColor: null,
-        useCORS: true
-    });
-
-    const link = document.createElement("a");
-
-    link.download = "pvp-overlay-1280x720.png";
-    link.href = canvas.toDataURL("image/png");
-
-    link.click();
-}
-</script>
