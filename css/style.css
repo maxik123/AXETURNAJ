@@ -142,3 +142,17 @@ html, body {
 #exportButton:hover {
     transform: scale(1.05);
 }
+body {
+    margin: 0;
+    padding: 0;
+    width: 1280px;
+    height: 720px;
+    overflow: hidden;
+    background: transparent;
+}
+
+.overlay {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+}
