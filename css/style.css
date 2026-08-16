@@ -114,3 +114,31 @@ html, body {
     .player { padding: 0 12px; gap: 10px; }
     .center-logo { width: 78px; height: 78px; }
 }
+#exportButton {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+
+    z-index: 9999;
+
+    padding: 12px 20px;
+
+    background: #ff4f55;
+    color: white;
+
+    border: 2px solid white;
+    border-radius: 4px;
+
+    font-family: "Minecraft", monospace;
+    font-size: 16px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 8px #ff4f55,
+        0 0 20px rgba(255, 79, 85, .6);
+}
+
+#exportButton:hover {
+    transform: scale(1.05);
+}
