@@ -51,3 +51,24 @@ async function exportOverlay() {
 </div>
 </body>
 </html>
+<script>
+async function exportOverlay() {
+
+    const overlay = document.querySelector(".overlay");
+
+    const canvas = await html2canvas(overlay, {
+        width: 1280,
+        height: 720,
+        scale: 1,
+        backgroundColor: null,
+        useCORS: true
+    });
+
+    const link = document.createElement("a");
+
+    link.download = "pvp-overlay-1280x720.png";
+    link.href = canvas.toDataURL("image/png");
+
+    link.click();
+}
+</script>
