@@ -6,6 +6,28 @@
 <title>PvP Overlay</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+async function exportOverlay() {
+    const overlay = document.querySelector(".scoreboard");
+
+    const canvas = await html2canvas(overlay, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        allowTaint: false
+    });
+
+    const link = document.createElement("a");
+
+    link.download = "pvp-overlay.png";
+    link.href = canvas.toDataURL("image/png");
+
+    link.click();
+}
+</script>
+    
 <body>
 <div class="scoreboard">
     <div class="player left">
